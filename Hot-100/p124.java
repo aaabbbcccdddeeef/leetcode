@@ -18,23 +18,4 @@ public class p124 {
         maxSum = Math.max(maxSum, root.val);
         return Math.max(leftSum, Math.max(rightSum, root.val));
     }
-
-    private class TreeNode {
-        int val;
-        TreeNode left;
-        TreeNode right;
-
-        TreeNode() {
-        }
-
-        TreeNode(int val) {
-            this.val = val;
-        }
-
-        TreeNode(int val, TreeNode left, TreeNode right) {
-            this.val = val;
-            this.left = left;
-            this.right = right;
-        }
-    }
 }
