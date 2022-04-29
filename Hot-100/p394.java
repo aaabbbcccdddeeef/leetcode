@@ -1,40 +1,52 @@
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Collections;
+import java.util.LinkedList;
 
 public class p394 {
-    public static void main(String[] args) {
-        String str = "3[a2[c]]";
-        Matcher matcher;
-        matcher = Pattern.compile("\\d+\\[[a-z]+\\]").matcher(str);
-        matcher.find();
-        System.out.println(decodeString(str));
+    private int ptr;
+
+    public String decodeString(String s) {
+        LinkedList<String> stack = new LinkedList<>();
+        ptr = 0;
+        while (ptr < s.length()) {
+            char ch = s.charAt(ptr);
+            if (Character.isDigit(ch)) {
+                stack.addLast(getDigit(s));
+            } else if (Character.isLetter(ch) || ch == '[') {
+                stack.addLast(String.valueOf(ch));
+                ptr++;
+            } else {
+                ++ptr;
+                LinkedList<String> ll = new LinkedList<>();
+                while (!"[".equals(stack.peekLast())) {
+                    ll.addLast(stack.removeLast());
+                }
+                Collections.reverse(ll);
+                stack.removeLast();
+                int rep = Integer.parseInt(stack.removeLast());
+                StringBuilder sb = new StringBuilder();
+                String o = getString(ll);
+                while (rep-- > 0) {
+                    sb.append(o);
+                }
+                stack.addLast(sb.toString());
+            }
+        }
+        return getString(stack);
     }
 
-    public static String decodeString(String s) {
-        Matcher matcher;
-        matcher = Pattern.compile("\\d+\\[[a-z]+\\]").matcher(s);
-        while (matcher.find()) {
-            String str = matcher.group();
-            matcher = Pattern.compile("\\d+").matcher(str);
-            if (!matcher.find()) {
-                return s;
-            }
-            int startIndex = s.indexOf(str), endIndex = str.length() + startIndex;
-            int count = Integer.valueOf(matcher.group());
-            matcher = Pattern.compile("[a-z]+").matcher(str);
-            if (matcher.find()) {
-                String inStr = matcher.group();
-                StringBuilder sb = new StringBuilder(count * inStr.length());
-                for (int i = 0; i < count; i++) {
-                    sb.append(inStr);
-                }
-                str = sb.toString();
-            } else {
-                str = "";
-            }
-            s = s.substring(0, startIndex) + str + s.substring(endIndex);
-            matcher = Pattern.compile("\\d+\\[[a-z]+\\]").matcher(s);
+    private String getDigit(String s) {
+        String digit = "";
+        while (Character.isDigit(s.charAt(ptr))) {
+            digit += s.charAt(ptr++);
         }
-        return s;
+        return digit;
+    }
+
+    private String getString(LinkedList<String> ll) {
+        StringBuilder sb = new StringBuilder();
+        for (String s : ll) {
+            sb.append(s);
+        }
+        return sb.toString();
     }
 }
