@@ -1,8 +1,3 @@
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-
 class p337 {
     public static void main(String[] args) {
         TreeNode root = new TreeNode(2);
