@@ -10,12 +10,11 @@ public class p301 {
         System.out.println(p.removeInvalidParentheses(s));
     }
 
-    int leftInvaild, rightInvalid;
-    Set<String> ans;
+    List<String> ans;
 
     public List<String> removeInvalidParentheses(String s) {
-        leftInvaild = rightInvalid = 0;
-        ans = new HashSet<>();
+        int leftInvaild = 0, rightInvalid = 0;
+        ans = new ArrayList<>();
         for (char ch : s.toCharArray()) {
             if (ch == '(') {
                 leftInvaild++;
@@ -27,73 +26,45 @@ public class p301 {
                 }
             }
         }
-        backtrack("", s, 0, leftInvaild, rightInvalid, 0, 0);
-        List<String> lst = new ArrayList<>(ans.stream().toList());
-        return lst;
+        backtrack(s, 0, leftInvaild, rightInvalid);
+        return ans;
     }
 
-    private void backtrack(String res, String s, int idx, int leftRe, int rightRe, int l, int r) {
-        StringBuilder sb = new StringBuilder(res);
-        // ignore letters
-        while (idx < s.length() && s.charAt(idx) != '(' && s.charAt(idx) != ')') {
-            sb.append(s.charAt(idx++));
-        }
-        // reach end and '(' count=0, ')' count=0
-        if (idx == s.length()) {
-            if (l == 0 && r == 0) {
-                ans.add(sb.toString());
-            }
-            return;
-        }
-        char ch = s.charAt(idx);
-        if (ch == '(' && leftRe > 0) {
-            backtrack(sb.toString(), s, ++idx, --leftRe, rightRe, l, r);
-            --idx;
-            ++leftRe;
-        }
-        if (ch == ')' && rightRe > 0) {
-            backtrack(sb.toString(), s, ++idx, leftRe, --rightRe, l, r);
-            --idx;
-            ++rightRe;
-        }
+    private void backtrack(String s, int idx, int leftRe, int rightRe) {
         if (leftRe == 0 && rightRe == 0) {
-            String tmp = sb.toString() + s.substring(idx);
-            if (isValid(tmp)) {
-                ans.add(tmp);
+            if (isValid(s)) {
+                ans.add(s);
             }
             return;
         }
-        // don't remove '(' or ')'
-        if (ch == '(') {
-            sb.append('(');
-            l++;
-        } else if (ch == ')') {
-            sb.append(')');
-            if (l != 0) {
-                l--;
-            } else {
-                r++;
+        for (int i = idx; i < s.length(); i++) {
+            if (leftRe + rightRe + i > s.length()) {
+                return;
+            }
+            if (i != idx && s.charAt(i) == s.charAt(i - 1)) {
+                continue;
+            }
+            if (leftRe > 0 && s.charAt(i) == '(') {
+                backtrack(s.substring(0, i) + s.substring(i + 1), i, leftRe - 1, rightRe);
+            }
+            if (rightRe > 0 && s.charAt(i) == ')') {
+                backtrack(s.substring(0, i) + s.substring(i + 1), i, leftRe, rightRe - 1);
             }
         }
-        if (r != 0) {
-            return;
-        }
-        backtrack(sb.toString(), s, ++idx, leftRe, rightRe, l, r);
     }
 
     private static boolean isValid(String s) {
-        int l = 0, r = 0;
+        int cnt = 0;
         for (char ch : s.toCharArray()) {
             if (ch == '(') {
-                l++;
+                cnt++;
             } else if (ch == ')') {
-                if (l != 0) {
-                    l--;
-                } else {
+                if (cnt == 0) {
                     return false;
                 }
+                cnt--;
             }
         }
-        return l == 0 && r == 0;
+        return cnt == 0;
     }
 }
