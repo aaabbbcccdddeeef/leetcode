@@ -1,31 +1,27 @@
-import java.util.Comparator;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.Deque;
+import java.util.LinkedList;
 
 public class p239 {
     public int[] maxSlidingWindow(int[] nums, int k) {
-        Queue<Integer> q = new PriorityQueue<Integer>(new Comparator<Integer>() {
-            @Override
-            public int compare(Integer o1, Integer o2) {
-                return Integer.valueOf(nums[o2]).compareTo(Integer.valueOf(nums[o1]));
-            }
-        });
+        Deque<Integer> deque = new LinkedList<>();
         int n = nums.length;
-        int[] ans = new int[n - k + 1];
-        boolean[] enabled = new boolean[n - k + 1];
         for (int i = 0; i < k; i++) {
-            q.offer(i);
-            enabled[i] = true;
-        }
-        ans[0] = nums[q.peek()];
-        for (int i = 1; i < n - k + 1; i++) {
-            enabled[i - 1] = false;
-            enabled[i + k - 1] = true;
-            q.offer(i + k - 1);
-            while (!enabled[q.peek()]) {
-                q.poll();
+            while (!deque.isEmpty() && nums[deque.peekLast()] <= nums[i]) {
+                deque.pollLast();
             }
-            ans[i] = nums[q.peek()];
+            deque.offerLast(i);
+        }
+        int[] ans = new int[n - k + 1];
+        ans[0] = nums[deque.peekFirst()];
+        for (int i = k; i < n; i++) {
+            while (!deque.isEmpty() && nums[deque.peekLast()] <= nums[i]) {
+                deque.pollLast();
+            }
+            while (!deque.isEmpty() && deque.peekFirst() <= i - k) {
+                deque.pollFirst();
+            }
+            deque.offer(i);
+            ans[i - k + 1] = nums[deque.peekFirst()];
         }
         return ans;
     }
