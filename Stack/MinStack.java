@@ -2,31 +2,38 @@ import java.util.Deque;
 import java.util.LinkedList;
 
 class MinStack {
-    private Deque<Integer> stack;
-    private Deque<Integer> minStack;
+    private Deque<Long> diffStack;
+    private int minValue;
 
     public MinStack() {
-        stack = new LinkedList<>();
-        minStack = new LinkedList<>();
-        minStack.push(Integer.MAX_VALUE);
+        diffStack = new LinkedList<>();
+        minValue = -1;
     }
 
     public void push(int val) {
-        stack.push(val);
-        minStack.push(Math.min(val, minStack.peek()));
+        if (diffStack.isEmpty()) {
+            diffStack.push(0L);
+            minValue = val;
+        } else {
+            diffStack.push(Long.valueOf(val) - minValue);
+            minValue = Math.min(minValue, val);
+        }
     }
 
     public void pop() {
-        stack.pop();
-        minStack.pop();
+        Long diff = diffStack.pop();
+        if (diff < 0) {
+            minValue = (int) (minValue - diff);
+        }
     }
 
     public int top() {
-        return stack.peek();
+        Long diff = diffStack.peek();
+        return diff >= 0 ? (int) (diff + minValue) : minValue;
     }
 
     public int getMin() {
-        return minStack.peek();
+        return diffStack.isEmpty() ? -1 : minValue;
     }
 }
 
