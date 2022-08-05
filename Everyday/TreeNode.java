@@ -1,5 +1,3 @@
-package Everyday;
-
 public class TreeNode {
     int val;
     TreeNode left;
