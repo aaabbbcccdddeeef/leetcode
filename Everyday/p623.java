@@ -1,20 +1,18 @@
 public class p623 {
     static public TreeNode addOneRow(TreeNode root, int val, int depth) {
-        TreeNode dummyRoot = new TreeNode(0, root, null);
-        dfsAndAdd(dummyRoot, val, depth, 0);
-        return dummyRoot.left;
-    }
-
-    static public void dfsAndAdd(TreeNode root, int val, int depth, int currDepth) {
         if (root == null)
-            return;
-        if (currDepth + 1 == depth) {
+            return null;
+        if (depth == 1) {
+            return new TreeNode(val, root, null);
+        }
+        if (depth == 2) {
             root.left = new TreeNode(val, root.left, null);
             root.right = new TreeNode(val, null, root.right);
         } else {
-            dfsAndAdd(root.left, val, depth, currDepth + 1);
-            dfsAndAdd(root.right, val, depth, currDepth + 1);
+            addOneRow(root.left, val, depth - 1);
+            addOneRow(root.right, val, depth - 1);
         }
+        return root;
     }
 
     public static void main(String[] args) {
