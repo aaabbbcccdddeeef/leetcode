@@ -9,37 +9,21 @@ public class p636 {
             return null;
         int[] ans = new int[n];
         Deque<Integer> idStk = new ArrayDeque<>();
-        int lastTime = 0; // abs value: last log's time. positive: last log is 'start'. negative: last log
-                          // is 'end'
+        int lastEndTime = 0;
         for (String log : logs) {
-            int id = getID(log), time = getTime(log);
-            if (log.indexOf("start") >= 0) {
-                // this is a call of this function
+            String[] info = log.split(":");
+            int id = Integer.parseInt(info[0]), time = Integer.parseInt(info[2]);
+            if (info[1].equals("start")) {
                 if (!idStk.isEmpty())
-                    ans[idStk.peek()] += lastTime >= 0 ? time - lastTime : time + lastTime - 1;
+                    ans[idStk.peek()] += time - lastEndTime;
                 idStk.push(id);
-                lastTime = time;
+                lastEndTime = time;
             } else {
-                // this is end of this function. Calculate the time
-                if (idStk.isEmpty() || idStk.peek() != id) {
-                    System.out.println("Wrong Func ID: " + id);
-                    break;
-                }
-                ans[idStk.pop()] += lastTime >= 0 ? time - lastTime + 1 : time + lastTime;
-                lastTime = -time;
+                ans[idStk.pop()] += time - lastEndTime + 1;
+                lastEndTime = time + 1;
             }
         }
         return ans;
-    }
-
-    static public int getID(String log) {
-        int idx = log.contains(":start") ? log.indexOf(":start") : log.indexOf(":end");
-        return Integer.parseInt(log.substring(0, idx));
-    }
-
-    static public int getTime(String log) {
-        int idx = log.contains(":start:") ? log.indexOf(":start:") + 7 : log.indexOf(":end:") + 5;
-        return Integer.parseInt(log.substring(idx));
     }
 
     public static void main(String[] args) {
